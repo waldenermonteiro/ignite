@@ -4,7 +4,6 @@ import { Container, Title } from "./styles";
 
 interface Props extends RectButtonProps {
   title: string;
-  onPress: () => void
 }
 export default function Button({ title, ...rest }: Props) {
   return (
