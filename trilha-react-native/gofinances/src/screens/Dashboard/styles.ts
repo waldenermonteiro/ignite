@@ -10,7 +10,6 @@ import { Feather } from "@expo/vector-icons";
 
 import { DataListProps } from "./index";
 
-
 export const Container = styled.View`
   flex: 1;
   background-color: ${({ theme }) => theme.colors.background};
@@ -66,9 +65,7 @@ export const Icon = styled(Feather)`
   font-size: ${RFValue(24)}px;
 `;
 
-export const LogoutButton = styled(BorderlessButton)`
-
-`
+export const LogoutButton = styled(BorderlessButton)``;
 
 export const HighlightCards = styled.ScrollView.attrs({
   horizontal: true,
@@ -91,7 +88,8 @@ export const Transactions = styled.View`
 export const Title = styled.Text`
   font-size: ${RFValue(18)}px;
   font-family: ${({ theme }) => theme.fonts.regular};
-  margin-bottom: ${RFValue(16)}px; ;
+  margin-bottom: ${RFValue(16)}px;
+  margin-top: ${RFValue(16)}px;
 `;
 export const TransactionsList = styled(
   FlatList as new () => FlatList<DataListProps>
