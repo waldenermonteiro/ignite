@@ -32,6 +32,7 @@ export default function CategorySelect({
   function handleCategorySelect(item: Category) {
     setCategory(item);
   }
+  console.log('CATEGORIES,',categories)
   return (
     <Container>
       <Header>
