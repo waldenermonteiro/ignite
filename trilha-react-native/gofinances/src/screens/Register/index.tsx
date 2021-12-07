@@ -40,6 +40,7 @@ export default function Register() {
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
   const [category, setCategory] = useState({
     key: "category",
+    key2:'',
     name: "Categoria",
   });
 
@@ -80,7 +81,7 @@ export default function Register() {
       name: form.name,
       amount: form.amount,
       type: transactionType,
-      category: category.key,
+      category: category.key2,
       date: new Date()
     };
     try {

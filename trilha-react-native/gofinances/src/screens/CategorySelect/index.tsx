@@ -30,9 +30,10 @@ export default function CategorySelect({
   closeSelectCategory,
 }: Props) {
   function handleCategorySelect(item: Category) {
+
     setCategory(item);
   }
-  console.log('CATEGORIES,',categories)
+
   return (
     <Container>
       <Header>
@@ -41,11 +42,11 @@ export default function CategorySelect({
       <FlatList
         data={categories}
         style={{ flex: 1, width: "100%" }}
-        keyExtractor={(item) => item.key}
+        keyExtractor={(item) => item.name}
         renderItem={({ item }) => (
           <Category
             onPress={() => handleCategorySelect(item)}
-            isActive={category.key === item.key}
+            isActive={category.name === item.name}
           >
             <Icon name={item.icon} />
             <Name>{item.name}</Name>
