@@ -1,12 +1,30 @@
-import React, { useEffect, useState } from "react";
-import { ScrollView } from "react-native";
+import React, { useCallback, useState } from "react";
+import { ActivityIndicator } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { VictoryPie } from "victory-native";
 
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+
 import HistoryCard from "../../components/HistoryCard";
 
-import { Container, Header, Title } from "./styles";
+import {
+  Container,
+  Content,
+  ChartContainer,
+  Header,
+  Title,
+  MonthSelect,
+  MonthSelectButton,
+  MonthSelectIcon,
+  Month,
+  Loading,
+} from "./styles";
 import { categories } from "../../utils/categories";
+import { ptBR } from "date-fns/locale";
+import { addMonths, subMonths, format } from "date-fns";
+import theme from "../../global/styles/theme";
+
 
 interface TransactionData {
   type: "positive" | "negative";
@@ -26,20 +44,33 @@ interface CategoryData {
 }
 
 export default function Resume() {
+  const [isLoading, setIsLoading] = useState(false);
   const [totalByCategories, setTotalByCategories] = useState<CategoryData[]>(
     []
   );
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const dataKey = "@gofinances:transactions";
 
+  function handleDateChange(action: "next" | "prev") {
+    if (action === "next") {
+      const newDate = setSelectedDate(addMonths(selectedDate, 1));
+    } else {
+      setSelectedDate(subMonths(selectedDate, 1));
+    }
+  }
+
   async function loadData() {
+    setIsLoading(true)
     const response = await AsyncStorage.getItem(dataKey);
 
     const responseFormatted = response ? JSON.parse(response) : [];
 
     const expensives = responseFormatted.filter(
-      (expensive: TransactionData) => expensive.type === "negative"
+      (expensive: TransactionData) =>
+        expensive.type === "negative" &&
+        new Date(expensive.date).getMonth() === selectedDate.getMonth() &&
+        new Date(expensive.date).getFullYear() === selectedDate.getFullYear()
     );
-    console.log('EXPENSIVES',expensives)
 
     const expensivesTotal = expensives.reduce(
       (acumullator: number, expensive: TransactionData) => {
@@ -48,17 +79,13 @@ export default function Resume() {
       0
     );
 
-    console.log('expensivesTotal',expensivesTotal);
-
     const totalByCategory: CategoryData[] = [];
 
     categories.forEach((category) => {
-
       let categorySum = 0;
 
       expensives.forEach((expensive: TransactionData) => {
         if (expensive.category === category.key2) {
- 
           categorySum += Number(expensive.amount);
         }
       });
@@ -84,38 +111,66 @@ export default function Resume() {
       }
     });
     setTotalByCategories(totalByCategory);
+    setIsLoading(false);
+ 
   }
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadData();
+    }, [selectedDate])
+  );
 
   return (
     <Container>
       <Header>
         <Title>Resumo por categoria</Title>
       </Header>
-      <ScrollView
-        contentContainerStyle={{ width: "100%", alignItems: "center" }}
-        scrollEnabled={true}
-      >
-        <VictoryPie
-          data={totalByCategories}
-          x="percent"
-          y="total"
-          colorScale={totalByCategories.map((category) => category.color)}
-          style={{labels: {fontSize: 18, fontWeight: 'bold', fill: 'white'}}}
-          labelRadius={50}
-        />
-        {totalByCategories.map((item, index) => (
-          <HistoryCard
-            key={index}
-            color={item.color}
-            title={item.name}
-            amount={item.totalFormatted}
-          />
-        ))}
-      </ScrollView>
+      {isLoading ? (
+        <Loading>
+          <ActivityIndicator color={theme.colors.primary} size="large" />
+        </Loading>
+      ) : (
+        <Content
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            paddingHorizontal: 24,
+            paddingBottom: useBottomTabBarHeight(),
+          }}
+        >
+          <MonthSelect>
+            <MonthSelectButton onPress={() => handleDateChange("prev")}>
+              <MonthSelectIcon name="chevron-left" />
+            </MonthSelectButton>
+            <Month>
+              {format(selectedDate, "MMMM, yyyy", { locale: ptBR })}
+            </Month>
+            <MonthSelectButton onPress={() => handleDateChange("next")}>
+              <MonthSelectIcon name="chevron-right" />
+            </MonthSelectButton>
+          </MonthSelect>
+          <ChartContainer>
+            <VictoryPie
+              data={totalByCategories}
+              x="percent"
+              y="total"
+              colorScale={totalByCategories.map((category) => category.color)}
+              style={{
+                labels: { fontSize: 18, fontWeight: "bold", fill: "white" },
+              }}
+              labelRadius={50}
+            />
+            {totalByCategories.map((item, index) => (
+              <HistoryCard
+                key={index}
+                color={item.color}
+                title={item.name}
+                amount={item.totalFormatted}
+              />
+            ))}
+          </ChartContainer>
+        </Content>
+      )}
     </Container>
   );
 }
