@@ -1,4 +1,5 @@
 import React from "react";
+import { Alert } from "react-native";
 
 import { RFValue } from "react-native-responsive-fontsize";
 
@@ -20,10 +21,18 @@ import {
   FooterWrapper,
 } from "./styles";
 
-
-
 export default function SignIn() {
-  const data = useAuth()
+  const { signInWithGoogle } = useAuth();
+
+  async function handleSignInWithGoogle() {
+    try {
+      const response = await signInWithGoogle();
+
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Não foi possivel conectar a conta Google");
+    }
+  }
   return (
     <Container>
       <Header>
@@ -41,7 +50,11 @@ export default function SignIn() {
       </Header>
       <Footer>
         <FooterWrapper>
-          <SignInSocialButton title="Entrar com o Google" svg={GoogleSvg} />
+          <SignInSocialButton
+            title="Entrar com o Google"
+            svg={GoogleSvg}
+            onPress={handleSignInWithGoogle}
+          />
           <SignInSocialButton title="Entrar com Apple" svg={AppleSvg} />
         </FooterWrapper>
       </Footer>
