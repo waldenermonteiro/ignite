@@ -24,6 +24,7 @@ import {
   LogoutButton,
   Loading,
 } from "./styles";
+import { useAuth } from "../../hooks/auth";
 
 export interface DataListProps extends TransactionCardProps {
   id: string;
@@ -42,6 +43,8 @@ interface HighlightData {
 
 export default function Dashboard() {
   const dataKey = "@gofinances:transactions";
+  const { signOut, user } = useAuth();
+
   const [isLoading, setIsLoading] = useState(true);
   const [transactions, setTransactions] = useState<DataListProps[]>([]);
   const [highlightData, setHighlightData] = useState<HighlightData>(
@@ -110,7 +113,7 @@ export default function Dashboard() {
     setTransactions(transactionsFormatted);
     let lastTransactionsEntries = "";
     let lastTransactionsExpensives = "";
-    let totalInterval = ""
+    let totalInterval = "";
 
     if (transactions.length !== 0) {
       lastTransactionsEntries = getLastTransactionDate(
@@ -121,7 +124,7 @@ export default function Dashboard() {
         transactions,
         "negative"
       );
-      totalInterval = `01 a ${lastTransactionsExpensives}`
+      totalInterval = `01 a ${lastTransactionsExpensives}`;
     }
 
     const total = entriesTotal - expensiveTotal;
@@ -174,15 +177,15 @@ export default function Dashboard() {
               <UserInfo>
                 <Photo
                   source={{
-                    uri: "https://avatars.githubusercontent.com/u/25882145?v=4",
+                    uri: user.photo,
                   }}
                 />
                 <User>
                   <UserGreeting>Olá</UserGreeting>
-                  <UserName>Rodrigo</UserName>
+                  <UserName>{user.name}</UserName>
                 </User>
               </UserInfo>
-              <LogoutButton onPress={() => {}}>
+              <LogoutButton onPress={signOut}>
                 <Icon name="power" />
               </LogoutButton>
             </UserWrapper>

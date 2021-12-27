@@ -1,6 +1,6 @@
-import React from "react";
-import { Alert } from "react-native";
-
+import React, { useState } from "react";
+import { ActivityIndicator, Alert } from "react-native";
+import { useTheme } from "styled-components";
 import { RFValue } from "react-native-responsive-fontsize";
 
 import { useAuth } from "../../hooks/auth";
@@ -24,21 +24,31 @@ import {
 export default function SignIn() {
   const { signInWithGoogle, signInWithApple } = useAuth();
 
+  const theme = useTheme();
+
+  const [isLoading, setIsLoading] = useState(false);
+
   async function handleSignInWithGoogle() {
     try {
-      const response = await signInWithGoogle();
+      setIsLoading(true);
+      return await signInWithGoogle();
     } catch (error) {
       console.log(error);
       Alert.alert("Não foi possivel conectar a conta Google");
+    } finally {
+      setIsLoading(false);
     }
   }
 
   async function handleSignInWithApple() {
     try {
-      const response = await signInWithApple();
+      setIsLoading(true);
+      return await signInWithApple();
     } catch (error) {
       console.log(error);
       Alert.alert("Não foi possivel conectar a conta Apple");
+    } finally {
+      setIsLoading(false);
     }
   }
   return (
@@ -69,6 +79,14 @@ export default function SignIn() {
             onPress={handleSignInWithApple}
           />
         </FooterWrapper>
+
+        {isLoading && (
+          <ActivityIndicator
+            style={{ marginTop: 18 }}
+            color={theme.colors.shape}
+            size="large"
+          />
+        )}
       </Footer>
     </Container>
   );

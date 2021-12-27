@@ -2,7 +2,7 @@ import React from "react";
 import "react-native-gesture-handler";
 import { StatusBar } from "react-native";
 
-import { AuthProvider } from "./src/hooks/auth";
+import { AuthProvider, useAuth } from "./src/hooks/auth";
 
 import { ThemeProvider } from "styled-components/native";
 import {
@@ -27,7 +27,10 @@ export default function App() {
     Poppins_500Medium,
     Poppins_700Bold,
   });
-  if (!fontsLoad) {
+
+  const { userStoragedLoading } = useAuth();
+  
+  if (!fontsLoad || userStoragedLoading) {
     return <AppLoading />;
   }
   return (
