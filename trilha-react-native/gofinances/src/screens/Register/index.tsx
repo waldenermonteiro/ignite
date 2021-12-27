@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import uuid from 'react-native-uuid'
+import uuid from "react-native-uuid";
 import { useNavigation } from "@react-navigation/native";
 
 import InputForm from "../../components/Forms/InputForm";
@@ -20,7 +20,7 @@ import {
   Fields,
   TransactionsTypes,
 } from "./styles";
-
+import { useAuth } from "../../hooks/auth";
 
 interface FormData {
   name: string;
@@ -36,26 +36,28 @@ const schema = Yup.object().shape({
 });
 
 export default function Register() {
+  const { user } = useAuth();
+
   const [transactionType, setTransactionType] = useState("");
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
   const [category, setCategory] = useState({
     key: "category",
-    key2:'',
+    key2: "category",
     name: "Categoria",
   });
 
-  const dataKey = "@gofinances:transactions";
+  const dataKey = `@gofinances:transactions_user:${user.id}`;
 
   const {
     control,
     handleSubmit,
     formState: { errors },
-    reset
+    reset,
   } = useForm({
     resolver: yupResolver(schema),
   });
 
-  const navigation = useNavigation()
+  const navigation = useNavigation();
 
   function handleTransactionTypeSelect(type: "positive" | "negative") {
     setTransactionType(type);
@@ -82,23 +84,19 @@ export default function Register() {
       amount: form.amount,
       type: transactionType,
       category: category.key2,
-      date: new Date()
+      date: new Date(),
     };
     try {
       const data = await AsyncStorage.getItem(dataKey);
-      const currentData = data ? JSON.parse(data) : []
+      const currentData = data ? JSON.parse(data) : [];
 
-      const dataFormatted = [
-          ...currentData,
-          newTransaction
-      ]
+      const dataFormatted = [...currentData, newTransaction];
       await AsyncStorage.setItem(dataKey, JSON.stringify(dataFormatted));
 
-      reset()
-      setTransactionType('')
-      setCategory({key: 'category', name: 'Categoria'})
-      navigation.navigate('Dashboard')
-
+      reset();
+      setTransactionType("");
+      setCategory({ key: "category", key2: "category", name: "Categoria" });
+      navigation.navigate("Dashboard");
     } catch (error) {
       console.log(error);
       Alert.alert("Não foi posível salvar");

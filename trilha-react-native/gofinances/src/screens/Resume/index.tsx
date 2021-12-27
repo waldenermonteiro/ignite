@@ -24,6 +24,7 @@ import { categories } from "../../utils/categories";
 import { ptBR } from "date-fns/locale";
 import { addMonths, subMonths, format } from "date-fns";
 import theme from "../../global/styles/theme";
+import { useAuth } from "../../hooks/auth";
 
 
 interface TransactionData {
@@ -44,12 +45,15 @@ interface CategoryData {
 }
 
 export default function Resume() {
+
+  const { signOut, user } = useAuth();
+  
   const [isLoading, setIsLoading] = useState(false);
   const [totalByCategories, setTotalByCategories] = useState<CategoryData[]>(
     []
   );
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const dataKey = "@gofinances:transactions";
+  const dataKey = `@gofinances:transactions_user:${user.id}`;
 
   function handleDateChange(action: "next" | "prev") {
     if (action === "next") {

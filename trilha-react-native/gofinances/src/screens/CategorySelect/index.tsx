@@ -16,6 +16,7 @@ import {
 } from "./styles";
 interface Category {
   key: string;
+  key2: string;
   name: string;
 }
 

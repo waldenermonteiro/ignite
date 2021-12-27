@@ -42,8 +42,9 @@ interface HighlightData {
 }
 
 export default function Dashboard() {
-  const dataKey = "@gofinances:transactions";
   const { signOut, user } = useAuth();
+
+  const dataKey =`@gofinances:transactions_user:${user.id}`;
 
   const [isLoading, setIsLoading] = useState(true);
   const [transactions, setTransactions] = useState<DataListProps[]>([]);
