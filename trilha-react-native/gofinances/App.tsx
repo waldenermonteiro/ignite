@@ -1,9 +1,8 @@
 import React from "react";
 import "react-native-gesture-handler";
 import { StatusBar } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
 
-import {AuthProvider } from "./src/hooks/auth";
+import { AuthProvider } from "./src/hooks/auth";
 
 import { ThemeProvider } from "styled-components/native";
 import {
@@ -15,13 +14,12 @@ import {
 
 import AppLoading from "expo-app-loading";
 
-import AppRoutes from "./src/routes/app.routes";
+import Routes from "./src/routes";
 
 import theme from "./src/global/styles/theme";
 
 import "intl";
 import "intl/locale-data/jsonp/pt-BR";
-import SignIn from "./src/screens/SignIn";
 
 export default function App() {
   const [fontsLoad] = useFonts({
@@ -34,12 +32,10 @@ export default function App() {
   }
   return (
     <ThemeProvider theme={theme}>
-      <NavigationContainer>
-        <StatusBar barStyle={"light-content"} />
-        <AuthProvider>
-          <SignIn />
-        </AuthProvider>
-      </NavigationContainer>
+      <StatusBar barStyle={"light-content"} />
+      <AuthProvider>
+        <Routes />
+      </AuthProvider>
     </ThemeProvider>
   );
 }
