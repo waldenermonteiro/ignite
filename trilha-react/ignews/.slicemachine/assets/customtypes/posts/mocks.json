@@ -1,0 +1,44 @@
+{
+  "id": "mock-doc-id",
+  "url": null,
+  "type": "posts",
+  "href": null,
+  "tags": [],
+  "first_publication_date": "1970-01-01T00:00:01+0000",
+  "last_publication_date": "1970-01-01T00:00:01+0000",
+  "slugs": [],
+  "linked_documents": [],
+  "lang": "en-us",
+  "alternate_languages": [],
+  "data": {
+    "title": [
+      {
+        "type": "heading1",
+        "text": "Compass",
+        "spans": []
+      }
+    ],
+    "content": [
+      {
+        "type": "heading1",
+        "text": "Beginning",
+        "spans": []
+      },
+      {
+        "type": "image",
+        "url": "https://images.unsplash.com/photo-1494173853739-c21f58b16055",
+        "alt": null,
+        "copyright": null,
+        "dimensions": {
+          "width": 900,
+          "height": 500
+        }
+      },
+      {
+        "type": "paragraph",
+        "text": "In nostrud voluptate aliqua ipsum proident amet magna velit. Consectetur cillum elit et eu nulla duis commodo non ipsum ex eiusmod. Nulla nulla laboris labore irure anim consequat occaecat cillum sit.",
+        "spans": []
+      }
+    ]
+  }
+}
