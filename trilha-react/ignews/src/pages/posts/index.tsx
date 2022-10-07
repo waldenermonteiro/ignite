@@ -1,6 +1,8 @@
 import React from "react";
 
 import Head from "next/head";
+import Link from "next/link";
+
 import { RichText } from "prismic-dom";
 
 import { createClient } from "../../services/prismic";
@@ -8,6 +10,7 @@ import { createClient } from "../../services/prismic";
 import styles from "./styles.module.scss";
 
 type Post = {
+  uid: string;
   slug: string;
   title: string;
   excerpt: string;
@@ -26,12 +29,14 @@ export default function Posts({ posts }: Props) {
       </Head>
       <main className={styles.container}>
         <div className={styles.posts}>
-          {posts.map((post, index) => (
-            <a key={post.slug} href="#">
-              <time>{post.updatedAt}</time>
-              <strong>{post.title}</strong>
-              <p>{post.excerpt}</p>
-            </a>
+          {posts.map((post) => (
+            <Link key={post.slug} href={`/posts/${post.uid}`}>
+              <a>
+                <time>{post.updatedAt}</time>
+                <strong>{post.title}</strong>
+                <p>{post.excerpt}</p>
+              </a>
+            </Link>
           ))}
         </div>
       </main>
@@ -40,12 +45,15 @@ export default function Posts({ posts }: Props) {
 }
 
 export async function getStaticProps() {
-  const client = createClient();
+  const prismic = createClient();
 
-  const data_posts = await client.getAllByType("posts");
+  const response = await prismic.getAllByType("posts");
 
-  const posts = data_posts.map((post) => {
+  console.log(response);
+
+  const posts = response.map((post) => {
     return {
+      uid: post.uid,
       slug: post.id,
       title: RichText.asText(post.data.title),
       excerpt:
@@ -61,7 +69,6 @@ export async function getStaticProps() {
       ),
     };
   });
-
 
   return {
     props: {
