@@ -1,12 +1,12 @@
-import { GetServerSideProps } from "next";
-import { getSession } from "next-auth/react";
-import Head from "next/head";
+import { GetServerSideProps } from 'next';
+import { getSession } from 'next-auth/react';
+import Head from 'next/head';
 
-import { RichText } from "prismic-dom";
+import { RichText } from 'prismic-dom';
 
-import { createClient } from "../../services/prismic";
+import { createClient } from '../../services/prismic';
 
-import styles from "./post.module.scss";
+import styles from './post.module.scss';
 
 interface PostProps {
   post: {
@@ -45,31 +45,32 @@ export const getServerSideProps: GetServerSideProps = async ({
 
   const { slug } = params;
 
-  // if(!session){
-
-  // }
+  if (!session?.activeSubscription) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    };
+  }
 
   const prismic = createClient();
 
-  console.log(slug);
-
-  const response = await prismic.getByUID("posts", String(slug), {});
+  const response = await prismic.getByUID('posts', String(slug), {});
 
   const post = {
     slug,
     title: RichText.asText(response.data.title),
     content: RichText.asHtml(response.data.content),
     updatedAt: new Date(response.last_publication_date).toLocaleDateString(
-      "pt-BR",
+      'pt-BR',
       {
-        day: "2-digit",
-        month: "long",
-        year: "numeric",
-      }
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+      },
     ),
   };
-
-  console.log(post);
 
   return {
     props: {

@@ -1,10 +1,10 @@
-import NextAuth from "next-auth";
+import NextAuth, { Awaitable, EventCallbacks, Session } from 'next-auth';
 
-import GithubProvider from "next-auth/providers/github";
+import GithubProvider from 'next-auth/providers/github';
 
-import { query as q } from "faunadb";
+import { query as q } from 'faunadb';
 
-import { fauna } from "../../../services/fauna";
+import { fauna } from '../../../services/fauna';
 
 export const authOptions = {
   providers: [
@@ -13,7 +13,7 @@ export const authOptions = {
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
       authorization: {
         params: {
-          scope: "read:user",
+          scope: 'read:user',
         },
       },
     }),
@@ -22,24 +22,46 @@ export const authOptions = {
     signingKey: process.env.SIGNING_KEY,
   },
   callbacks: {
-    async signIn(data) {
-      const { email } = data.user;
+    async session({ session }) {
+      const { email } = session.user;
 
-      console.log(email)
+      try {
+        const userActiveSubscription = await fauna.query(
+          q.Get(
+            q.Intersection([
+              q.Match(
+                q.Index('subscription_by_user_ref'),
+                q.Select(
+                  'ref',
+                  q.Get(q.Match(q.Index('user_by_email'), q.Casefold(email))),
+                ),
+              ),
+              q.Match(q.Index('subscription_by_status'), 'active'),
+            ]),
+          ),
+        );
+
+        return { ...session, activeSubscription: userActiveSubscription };
+      } catch {
+        return { ...session, activeSubscription: null };
+      }
+    },
+    async signIn({ user }) {
+      const { email } = user;
 
       try {
         await fauna.query(
           q.If(
             q.Not(
-              q.Exists(
-                q.Match(
-                  q.Index('user_by_email'), q.Casefold(email)
-                  )
-                )
-              ),
-            q.Create(q.Collection('users'), { data: { email } }),
-            q.Get(q.Match(q.Index('user_by_email'), q.Casefold(email)))
-          )
+              q.Exists(q.Match(q.Index('user_by_email'), q.Casefold(email))),
+            ),
+            q.Create(q.Collection('users'), {
+              data: {
+                email,
+              },
+            }),
+            q.Get(q.Match(q.Index('user_by_email'), q.Casefold(email))),
+          ),
         );
         return true;
       } catch {
