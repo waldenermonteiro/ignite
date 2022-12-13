@@ -54,13 +54,13 @@ const options = {
 
   fill: {
     opacity: 0.3,
-    type: 'gradient',
+    type: "gradient",
     gradient: {
-      shade: 'dark',
+      shade: "dark",
       opacityFrom: 0.7,
-      opacityTo: 0.3
-    }
-  }
+      opacityTo: 0.3,
+    },
+  },
 };
 
 export default function Dashboard() {
@@ -76,13 +76,13 @@ export default function Dashboard() {
           minChildWidth={"320px"}
           alignContent="flex-start"
         >
-          <Box p={"8"} bg="gray.800" borderRadius={8} pb="4">
+          <Box p={["6", "8"]} bg="gray.800" borderRadius={8} pb="4">
             <Text fontSize={"lg"} mb="4">
               Inscritos da semana
             </Text>
             <Chart series={series} options={options} type="area" height={160} />
           </Box>
-          <Box p={"8"} bg="gray.800" borderRadius={8} pb="4">
+          <Box p={["6", "8"]} bg="gray.800" borderRadius={8} pb="4">
             <Text fontSize={"lg"} mb="4">
               Taxa de abertura
             </Text>
